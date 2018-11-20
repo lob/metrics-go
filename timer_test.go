@@ -4,14 +4,15 @@ import (
 	"testing"
 	"time"
 
-	"github.com/lob/assets-proxy/pkg/config"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
 
 func TestTimer(t *testing.T) {
-	cfg, err := config.New()
-	require.NoError(t, err)
+	cfg := Config{
+		StatsdHost: "127.0.0.1",
+		StatsdPort: 8125,
+	}
 
 	t.Run("calls histogram with correct duration", func(tt *testing.T) {
 		metrics := newMockedClient(t, cfg)

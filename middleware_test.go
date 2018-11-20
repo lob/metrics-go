@@ -7,14 +7,15 @@ import (
 	"time"
 
 	"github.com/labstack/echo"
-	"github.com/lob/assets-proxy/pkg/config"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
 
 func TestMiddleware(t *testing.T) {
-	cfg, err := config.New()
-	require.NoError(t, err)
+	cfg := Config{
+		StatsdHost: "127.0.0.1",
+		StatsdPort: 8125,
+	}
 
 	t.Run("sends request duration through Datadog client", func(tt *testing.T) {
 		metrics := newMockedClient(t, cfg)

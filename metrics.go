@@ -4,7 +4,6 @@ import (
 	"fmt"
 
 	"github.com/DataDog/datadog-go/statsd"
-	"github.com/lob/assets-proxy/pkg/config"
 )
 
 type statsdClient interface {
@@ -17,10 +16,8 @@ type Metrics struct {
 	client statsdClient
 }
 
-const namespace = "assets_proxy."
-
 // New sets up metric package with a Datadog client.
-func New(cfg config.Config) (Metrics, error) {
+func New(cfg Config) (Metrics, error) {
 	address := fmt.Sprintf("%s:%d", cfg.StatsdHost, cfg.StatsdPort)
 
 	client, err := statsd.New(address)
@@ -28,7 +25,7 @@ func New(cfg config.Config) (Metrics, error) {
 		return Metrics{}, err
 	}
 
-	client.Namespace = namespace
+	client.Namespace = cfg.Namespace
 	client.Tags = []string{
 		fmt.Sprintf("environment:%s", cfg.Environment),
 		fmt.Sprintf("container:%s", cfg.Hostname),
