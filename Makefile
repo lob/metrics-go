@@ -35,6 +35,11 @@ setup:
 	go get -u -v github.com/alecthomas/gometalinter github.com/golang/dep/cmd/dep
 	gometalinter --install
 
+.PHONY: install
+install:
+	@echo "---> Installing dependencies"
+	dep ensure
+
 .PHONY: test
 test:
 	@echo "---> Testing"

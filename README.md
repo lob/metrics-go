@@ -18,7 +18,7 @@ Creaet a new Metrics client:
 ```go
 
 cfg := metrics.Config{ ... }
-metrics := metrics.New(cfg)
+m := metrics.New(cfg)
 ```
 
 All metrics reported from the instance will have the environment, container, and release added as tags.
@@ -31,13 +31,13 @@ struct for convenience.
 ### Count
 
 ```go
-metrics.Count("event-counter", 1)
+m.Count("event-counter", 1)
 ```
 
 ### Histogram
 
 ```go
-metrics.Histogram("queue-depth", 10)
+m.Histogram("queue-depth", 10)
 ```
 
 ### Timers
