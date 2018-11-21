@@ -4,7 +4,6 @@ import (
 	"errors"
 	"testing"
 
-	"github.com/lob/assets-proxy/pkg/config"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -44,7 +43,7 @@ func (m *mockClient) Histogram(name string, duration float64, tags []string, rat
 	return errors.New("test error")
 }
 
-func newMockedClient(t *testing.T, cfg config.Config) Metrics {
+func newMockedClient(t *testing.T, cfg Config) Metrics {
 	metrics, err := New(cfg)
 	require.NoError(t, err)
 	require.NotNil(t, metrics)
@@ -55,8 +54,10 @@ func newMockedClient(t *testing.T, cfg config.Config) Metrics {
 }
 
 func TestCount(t *testing.T) {
-	cfg, err := config.New()
-	require.NoError(t, err)
+	cfg := Config{
+		StatsdHost: "127.0.0.1",
+		StatsdPort: 8125,
+	}
 
 	t.Run("calls Datadog Count function and ignores error", func(tt *testing.T) {
 		metrics := newMockedClient(t, cfg)
@@ -74,8 +75,10 @@ func TestCount(t *testing.T) {
 }
 
 func TestHistogram(t *testing.T) {
-	cfg, err := config.New()
-	require.NoError(t, err)
+	cfg := Config{
+		StatsdHost: "127.0.0.1",
+		StatsdPort: 8125,
+	}
 
 	t.Run("calls Datadog Histogram function and ignores error", func(tt *testing.T) {
 		metrics := newMockedClient(t, cfg)
