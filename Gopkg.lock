@@ -37,14 +37,6 @@
   version = "v0.2.8"
 
 [[projects]]
-  branch = "master"
-  digest = "1:7dcbf9b9167f4b2a45cc61af899d588f655aaa5e9379cf48138572b2a326dcf5"
-  name = "github.com/lob/assets-proxy"
-  packages = ["pkg/errutil"]
-  pruneopts = "UT"
-  revision = "ecc1b1d9c240fa9160253079173de8aff5bcf00f"
-
-[[projects]]
   digest = "1:c658e84ad3916da105a761660dcaeb01e63416c8ec7bc62256a9b411a05fcd67"
   name = "github.com/mattn/go-colorable"
   packages = ["."]
@@ -59,14 +51,6 @@
   pruneopts = "UT"
   revision = "6ca4dbf54d38eea1a992b3c722a76a5d1c4cb25c"
   version = "v0.0.4"
-
-[[projects]]
-  digest = "1:40e195917a951a8bf867cd05de2a46aaf1806c50cf92eebf4c16f78cd196f747"
-  name = "github.com/pkg/errors"
-  packages = ["."]
-  pruneopts = "UT"
-  revision = "645ef00459ed84a119197bfb8d8205042c6df63d"
-  version = "v0.8.0"
 
 [[projects]]
   digest = "1:0028cb19b2e4c3112225cd871870f2d9cf49b9b4276531f03438a88e94be86fe"
@@ -128,7 +112,6 @@
   input-imports = [
     "github.com/DataDog/datadog-go/statsd",
     "github.com/labstack/echo",
-    "github.com/lob/assets-proxy/pkg/errutil",
     "github.com/stretchr/testify/assert",
     "github.com/stretchr/testify/require",
   ]

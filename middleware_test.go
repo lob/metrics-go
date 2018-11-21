@@ -1,6 +1,7 @@
 package metrics
 
 import (
+	"errors"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -40,4 +41,28 @@ func TestMiddleware(t *testing.T) {
 
 		assert.True(t, testDuration <= mc.duration, "incorrect duration")
 	})
+
+	t.Run("times error responses", func(tt *testing.T) {
+		metrics := newMockedClient(t, cfg)
+
+		e := echo.New()
+		e.Use(Middleware(metrics))
+
+		e.GET("/", func(c echo.Context) error {
+			return errors.New("Aieeeeeeeee")
+		})
+
+		req, err := http.NewRequest("GET", "/", nil)
+		require.NoError(t, err)
+
+		rr := httptest.NewRecorder()
+		e.ServeHTTP(rr, req)
+		assert.Equal(t, http.StatusInternalServerError, rr.Code)
+
+		mc, ok := metrics.client.(*mockClient)
+		require.True(t, ok, "unexpected error during type assertion")
+
+		assert.True(t, testDuration <= mc.duration, "incorrect duration")
+	})
+
 }

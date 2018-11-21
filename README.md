@@ -54,6 +54,18 @@ if err != nil {
 }
 ```
 
+### Middleware
+
+This package includes middleware suitable for use with Echo servers.
+
+```go
+
+m := metrics.New(cfg)
+e := echo.New()
+e.Use(metrics.Middleware(m))
+
+```
+
 ## Development
 
 ```
