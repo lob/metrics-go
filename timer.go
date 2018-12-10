@@ -8,13 +8,13 @@ import (
 // as a Histogram datapoint.
 type Timer struct {
 	name    string
-	metrics *Metrics
+	metrics *metrics
 	begin   time.Time
 	tags    []string
 }
 
 // NewTimer returns a Timer object with a set start time
-func (m *Metrics) NewTimer(name string, tags ...string) Timer {
+func (m *metrics) NewTimer(name string, tags ...string) Timer {
 	return Timer{
 		begin:   time.Now(),
 		metrics: m,
