@@ -6,7 +6,12 @@ import (
 
 // Timer facilitates timing and tagging a metric before sending it to Datadog
 // as a Histogram datapoint.
-type Timer struct {
+type Timer interface {
+	End(...string) float64
+}
+
+// timer provides a statsd implementation of the Timer interface
+type timer struct {
 	name    string
 	metrics *metrics
 	begin   time.Time
@@ -15,7 +20,7 @@ type Timer struct {
 
 // NewTimer returns a Timer object with a set start time
 func (m *metrics) NewTimer(name string, tags ...string) Timer {
-	return Timer{
+	return &timer{
 		begin:   time.Now(),
 		metrics: m,
 		name:    name,
@@ -25,7 +30,7 @@ func (m *metrics) NewTimer(name string, tags ...string) Timer {
 
 // End ends a Timer and sends the metric and duration to Datadog as a
 // Histogram datapoint.
-func (t *Timer) End(additionalTags ...string) float64 {
+func (t *timer) End(additionalTags ...string) float64 {
 	duration := time.Since(t.begin)
 	durationInMS := float64(duration / time.Millisecond)
 
