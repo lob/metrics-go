@@ -13,7 +13,7 @@ import (
 )
 ```
 
-Creaet a new Metrics client:
+Create a new Metrics client:
 
 ```go
 
