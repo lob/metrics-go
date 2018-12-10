@@ -49,6 +49,15 @@ func newMockedClient(t *testing.T, cfg Config) *metrics {
 	}
 }
 
+func TestNewMetrics(t *testing.T) {
+	cfg := Config{
+		StatsdHost: "127.0.0.1",
+		StatsdPort: 8125,
+	}
+	_, err := New(cfg)
+	assert.NoError(t, err)
+}
+
 func TestCount(t *testing.T) {
 	cfg := Config{
 		StatsdHost: "127.0.0.1",
