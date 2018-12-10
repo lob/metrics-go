@@ -43,14 +43,10 @@ func (m *mockClient) Histogram(name string, duration float64, tags []string, rat
 	return errors.New("test error")
 }
 
-func newMockedClient(t *testing.T, cfg Config) Metrics {
-	metrics, err := New(cfg)
-	require.NoError(t, err)
-	require.NotNil(t, metrics)
-
-	metrics.client = &mockClient{t, "", 0, 0, []string{}, 0}
-
-	return metrics
+func newMockedClient(t *testing.T, cfg Config) *metrics {
+	return &metrics{
+		client: &mockClient{t, "", 0, 0, []string{}, 0},
+	}
 }
 
 func TestCount(t *testing.T) {
