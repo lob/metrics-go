@@ -1,7 +1,9 @@
 package metrics
 
 import (
+	"errors"
 	"fmt"
+	"strings"
 
 	"github.com/DataDog/datadog-go/statsd"
 )
@@ -18,6 +20,14 @@ type StatsReporter struct {
 
 // New sets up metric package with a Datadog client.
 func New(cfg Config) (*StatsReporter, error) {
+	if cfg.Namespace == "" {
+		// Namespace must be populated
+		return nil, errors.New("Namespace must be provided")
+	}
+	if !strings.HasSuffix(cfg.Namespace, ".") {
+		cfg.Namespace = fmt.Sprintf("%s.", cfg.Namespace)
+	}
+
 	address := fmt.Sprintf("%s:%d", cfg.StatsdHost, cfg.StatsdPort)
 
 	client, err := statsd.New(address)
