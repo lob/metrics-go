@@ -13,13 +13,13 @@ type Timer interface {
 // timer provides a statsd implementation of the Timer interface
 type timer struct {
 	name    string
-	metrics *metrics
+	metrics *StatsReporter
 	begin   time.Time
 	tags    []string
 }
 
 // NewTimer returns a Timer object with a set start time
-func (m *metrics) NewTimer(name string, tags ...string) Timer {
+func (m *StatsReporter) NewTimer(name string, tags ...string) Timer {
 	return &timer{
 		begin:   time.Now(),
 		metrics: m,
