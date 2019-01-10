@@ -4,6 +4,8 @@ import (
 	"errors"
 	"testing"
 
+	"github.com/DataDog/datadog-go/statsd"
+
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -43,19 +45,47 @@ func (m *mockClient) Histogram(name string, duration float64, tags []string, rat
 	return errors.New("test error")
 }
 
-func newMockedClient(t *testing.T, cfg Config) *metrics {
-	return &metrics{
+func newMockedClient(t *testing.T, cfg Config) *StatsReporter {
+	return &StatsReporter{
 		client: &mockClient{t, "", 0, 0, []string{}, 0},
 	}
 }
 
 func TestNewMetrics(t *testing.T) {
-	cfg := Config{
-		StatsdHost: "127.0.0.1",
-		StatsdPort: 8125,
-	}
-	_, err := New(cfg)
-	assert.NoError(t, err)
+	t.Run("create new metrics", func(t *testing.T) {
+		cfg := Config{
+			Namespace:  "testing.",
+			StatsdHost: "127.0.0.1",
+			StatsdPort: 8125,
+		}
+		m, err := New(cfg)
+		assert.NoError(t, err)
+
+		client, ok := m.client.(*statsd.Client)
+		require.True(t, ok)
+		assert.Equal(t, "testing.", client.Namespace)
+	})
+
+	t.Run("namespace required", func(t *testing.T) {
+		_, err := New(Config{
+			StatsdHost: "127.0.0.1",
+			StatsdPort: 8125,
+		})
+		assert.Error(t, err)
+	})
+
+	t.Run("namespace appends separator", func(t *testing.T) {
+		m, err := New(Config{
+			Namespace:  "testing",
+			StatsdHost: "127.0.0.1",
+			StatsdPort: 8125,
+		})
+		assert.NoError(t, err)
+
+		client, ok := m.client.(*statsd.Client)
+		require.True(t, ok)
+		assert.Equal(t, "testing.", client.Namespace)
+	})
 }
 
 func TestCount(t *testing.T) {

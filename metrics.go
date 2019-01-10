@@ -1,7 +1,9 @@
 package metrics
 
 import (
+	"errors"
 	"fmt"
+	"strings"
 
 	"github.com/DataDog/datadog-go/statsd"
 )
@@ -11,24 +13,26 @@ type statsdClient interface {
 	Count(name string, value int64, tags []string, rate float64) error
 }
 
-type metrics struct {
+// StatsReporter provides the ability to report metrics to statsd
+type StatsReporter struct {
 	client statsdClient
 }
 
-// Metrics defines the interface for metrics producers
-type Metrics interface {
-	Count(name string, count int64, tags ...string)
-	Histogram(name string, value float64, tags ...string)
-	NewTimer(name string, tags ...string) Timer
-}
-
 // New sets up metric package with a Datadog client.
-func New(cfg Config) (Metrics, error) {
+func New(cfg Config) (*StatsReporter, error) {
+	if cfg.Namespace == "" {
+		// Namespace must be populated
+		return nil, errors.New("Namespace must be provided")
+	}
+	if !strings.HasSuffix(cfg.Namespace, ".") {
+		cfg.Namespace = fmt.Sprintf("%s.", cfg.Namespace)
+	}
+
 	address := fmt.Sprintf("%s:%d", cfg.StatsdHost, cfg.StatsdPort)
 
 	client, err := statsd.New(address)
 	if err != nil {
-		return &metrics{}, err
+		return &StatsReporter{}, err
 	}
 
 	client.Namespace = cfg.Namespace
@@ -38,17 +42,17 @@ func New(cfg Config) (Metrics, error) {
 		fmt.Sprintf("release:%s", cfg.Release),
 	}
 
-	return &metrics{client}, nil
+	return &StatsReporter{client}, nil
 }
 
 // Count increments an event counter in Datadog while disregarding potential
 // errors.
-func (m *metrics) Count(name string, count int64, tags ...string) {
+func (m *StatsReporter) Count(name string, count int64, tags ...string) {
 	m.client.Count(name, count, tags, 1) // nolint:gosec
 }
 
 // Histogram sends statistical distribution data to Datadog while disregarding
 // potential errors.
-func (m *metrics) Histogram(name string, value float64, tags ...string) {
+func (m *StatsReporter) Histogram(name string, value float64, tags ...string) {
 	m.client.Histogram(name, value, tags, 1) // nolint:gosec
 }

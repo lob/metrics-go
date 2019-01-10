@@ -17,9 +17,13 @@ Create a new Metrics client:
 
 ```go
 
-cfg := metrics.Config{ ... }
+cfg := metrics.Config{
+    Namespace: "myapp",
+}
 m := metrics.New(cfg)
 ```
+
+The metric `Namespace` *must* be provided.
 
 All metrics reported from the instance will have the environment, container, and release added as tags.
 
