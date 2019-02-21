@@ -1,4 +1,6 @@
-package metrics
+package config
+
+import "io"
 
 // Config stores configuration necessary for connecting to statsd and reporting metrics.
 type Config struct {
@@ -8,4 +10,6 @@ type Config struct {
 	Release     string
 	StatsdHost  string
 	StatsdPort  int
+	Log         bool
+	Logger      io.WriteCloser
 }
