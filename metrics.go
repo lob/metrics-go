@@ -1,20 +1,62 @@
 package metrics
 
 import (
-	"github.com/lob/metrics-go/pkg/client"
-	"github.com/lob/metrics-go/pkg/config"
+	"errors"
+	"fmt"
+	"strings"
+
+	"github.com/DataDog/datadog-go/statsd"
+	"github.com/lob/metrics-go/pkg/lambda"
 )
 
-// StatsReporter provides the ability to report metrics to statsd
+type metricsClient interface {
+	Count(name string, count int64, tags []string, rate float64) error
+	Gauge(name string, value float64, tags []string, rate float64) error
+	Histogram(name string, value float64, tags []string, rate float64) error
+	Close() error
+}
+
+// StatsReporter provides the ability to report metrics to client
 type StatsReporter struct {
-	client *client.Client
+	client metricsClient
 }
 
 // New sets up metric package with a Datadog client.
-func New(cfg config.Config) (*StatsReporter, error) {
-	client, err := client.New(cfg)
-	if err != nil {
-		return &StatsReporter{}, err
+func New(cfg Config) (*StatsReporter, error) {
+	if cfg.Namespace == "" {
+		// Namespace must be populated
+		return nil, errors.New("Namespace must be provided")
+	}
+	if !strings.HasSuffix(cfg.Namespace, ".") {
+		cfg.Namespace = fmt.Sprintf("%s.", cfg.Namespace)
+	}
+
+	var client metricsClient
+	if cfg.Log {
+		lambda := lambda.New(cfg.Logger)
+
+		lambda.Namespace = cfg.Namespace
+		lambda.Tags = []string{
+			fmt.Sprintf("environment:%s", cfg.Environment),
+			fmt.Sprintf("release:%s", cfg.Release),
+		}
+
+		client = lambda
+	} else {
+		address := fmt.Sprintf("%s:%d", cfg.StatsdHost, cfg.StatsdPort)
+		statsd, err := statsd.New(address)
+		if err != nil {
+			return &StatsReporter{}, err
+		}
+
+		statsd.Namespace = cfg.Namespace
+		statsd.Tags = []string{
+			fmt.Sprintf("environment:%s", cfg.Environment),
+			fmt.Sprintf("container:%s", cfg.Hostname),
+			fmt.Sprintf("release:%s", cfg.Release),
+		}
+
+		client = statsd
 	}
 
 	return &StatsReporter{client}, nil
