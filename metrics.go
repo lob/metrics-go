@@ -82,5 +82,5 @@ func (m *StatsReporter) Histogram(name string, value float64, tags ...string) {
 
 // Close closes the metrics client while disregarding potential errors.
 func (m *StatsReporter) Close() {
-	m.client.Close()
+	m.client.Close() // nolint:gosec
 }

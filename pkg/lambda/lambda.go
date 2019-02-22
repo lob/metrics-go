@@ -7,28 +7,35 @@ import (
 	"time"
 )
 
+// Client writes metrics in a Lambda format and
+// implements the metricsClient interface.
 type Client struct {
 	writer    io.WriteCloser
 	Namespace string
 	Tags      []string
 }
 
+// New returns a new lambda Client that uses the provided WriteCloser.
 func New(w io.WriteCloser) *Client {
 	return &Client{writer: w}
 }
 
+// Close wraps the writers Close method.
 func (l *Client) Close() error {
 	return l.writer.Close()
 }
 
+// Count sends a count metric.
 func (l *Client) Count(name string, count int64, tags []string, rate float64) error {
 	return l.send(name, strconv.FormatInt(count, 10), tags, "count")
 }
 
+// Gauge sends a gauge metric.
 func (l *Client) Gauge(name string, value float64, tags []string, rate float64) error {
 	return l.send(name, strconv.FormatFloat(value, 'f', -1, 64), tags, "gauge")
 }
 
+// Histogram sends a histogram metric.
 func (l *Client) Histogram(name string, value float64, tags []string, rate float64) error {
 	return l.send(name, strconv.FormatFloat(value, 'f', -1, 64), tags, "histogram")
 }
