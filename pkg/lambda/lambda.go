@@ -44,6 +44,7 @@ func (l *Client) Histogram(name string, value float64, tags []string, rate float
 	return l.send(name, strconv.FormatFloat(value, 'f', -1, 64), tags, "histogram")
 }
 
+// nolint:gosec
 func (l *Client) send(name string, value string, tags []string, metricType string) error {
 	now := time.Now().Unix()
 
