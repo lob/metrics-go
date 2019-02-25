@@ -53,6 +53,12 @@ func TestNewLambda(t *testing.T) {
 
 		assert.Equal(t, w, c.writer)
 	})
+
+	t.Run("errors for nil WriteCloser", func(t *testing.T) {
+		_, err := New(nil)
+
+		assert.Error(t, err)
+	})
 }
 
 func TestClose(t *testing.T) {

@@ -21,6 +21,7 @@ func New(w io.WriteCloser) (*Client, error) {
 	if w == nil {
 		return nil, errors.New("invalid writer")
 	}
+
 	return &Client{writer: w}, nil
 }
 

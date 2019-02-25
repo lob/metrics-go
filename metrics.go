@@ -41,6 +41,7 @@ func New(cfg Config) (*StatsReporter, error) {
 		lambda.Namespace = cfg.Namespace
 		lambda.Tags = []string{
 			fmt.Sprintf("environment:%s", cfg.Environment),
+			fmt.Sprintf("container:%s", cfg.Hostname),
 			fmt.Sprintf("release:%s", cfg.Release),
 		}
 
