@@ -25,7 +25,7 @@ func TestMiddleware(t *testing.T) {
 		e.Use(Middleware(metrics))
 
 		e.GET("/", func(c echo.Context) error {
-			time.Sleep(time.Duration(testDuration) * time.Millisecond)
+			time.Sleep(time.Duration(testValue) * time.Millisecond)
 			return nil
 		})
 
@@ -39,7 +39,7 @@ func TestMiddleware(t *testing.T) {
 		mc, ok := metrics.client.(*mockClient)
 		require.True(t, ok, "unexpected error during type assertion")
 
-		assert.True(t, testDuration <= mc.duration, "incorrect duration")
+		assert.True(t, testValue <= mc.value, "incorrect value")
 	})
 
 	t.Run("times error responses", func(tt *testing.T) {
@@ -62,7 +62,7 @@ func TestMiddleware(t *testing.T) {
 		mc, ok := metrics.client.(*mockClient)
 		require.True(t, ok, "unexpected error during type assertion")
 
-		assert.True(t, testDuration <= mc.duration, "incorrect duration")
+		assert.True(t, testValue <= mc.value, "incorrect value")
 	})
 
 }

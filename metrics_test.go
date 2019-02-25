@@ -12,7 +12,7 @@ import (
 )
 
 const testCount = int64(1)
-const testDuration = float64(50)
+const testValue = float64(50)
 const testRate = float64(1)
 const testMetric = "test_metric"
 const testTag = "foo:bar"
@@ -20,12 +20,12 @@ const testTag = "foo:bar"
 var testTags = []string{testTag}
 
 type mockClient struct {
-	t        *testing.T
-	name     string
-	count    int64
-	duration float64
-	tags     []string
-	rate     float64
+	t     *testing.T
+	name  string
+	count int64
+	value float64
+	tags  []string
+	rate  float64
 }
 
 type mockWriter struct {
@@ -48,18 +48,18 @@ func (m *mockClient) Count(name string, count int64, tags []string, rate float64
 	return errors.New("test error")
 }
 
-func (m *mockClient) Histogram(name string, duration float64, tags []string, rate float64) error {
+func (m *mockClient) Histogram(name string, value float64, tags []string, rate float64) error {
 	m.name = testMetric
-	m.duration = testDuration
+	m.value = testValue
 	m.tags = testTags
 	m.rate = testRate
 
 	return errors.New("test error")
 }
 
-func (m *mockClient) Gauge(name string, duration float64, tags []string, rate float64) error {
+func (m *mockClient) Gauge(name string, value float64, tags []string, rate float64) error {
 	m.name = testMetric
-	m.duration = testDuration
+	m.value = testValue
 	m.tags = testTags
 	m.rate = testRate
 
@@ -157,13 +157,13 @@ func TestGauge(t *testing.T) {
 	t.Run("calls Gauge function and ignores error", func(tt *testing.T) {
 		metrics := newMockedClient(t, cfg)
 
-		metrics.Gauge(testMetric, testDuration, testTags...)
+		metrics.Gauge(testMetric, testValue, testTags...)
 
 		mc, ok := metrics.client.(*mockClient)
 		require.True(t, ok, "unexpected error during type assertion")
 
 		assert.Equal(t, testMetric, mc.name, "inconsistent metric name")
-		assert.Equal(t, testDuration, mc.duration, "inconsistent metric duration")
+		assert.Equal(t, testValue, mc.value, "inconsistent metric value")
 		assert.Equal(t, testTags, mc.tags, "inconsistent tags")
 		assert.Equal(t, testRate, mc.rate, "inconsistent rate")
 	})
@@ -178,13 +178,13 @@ func TestHistogram(t *testing.T) {
 	t.Run("calls Histogram function and ignores error", func(tt *testing.T) {
 		metrics := newMockedClient(t, cfg)
 
-		metrics.Histogram(testMetric, testDuration, testTags...)
+		metrics.Histogram(testMetric, testValue, testTags...)
 
 		mc, ok := metrics.client.(*mockClient)
 		require.True(t, ok, "unexpected error during type assertion")
 
 		assert.Equal(t, testMetric, mc.name, "inconsistent metric name")
-		assert.Equal(t, testDuration, mc.duration, "inconsistent duration")
+		assert.Equal(t, testValue, mc.value, "inconsistent value")
 		assert.Equal(t, testTags, mc.tags, "inconsistent tags")
 		assert.Equal(t, testRate, mc.rate, "inconsistent rate")
 	})

@@ -2,6 +2,7 @@ package lambda
 
 import (
 	"bytes"
+	"errors"
 	"io"
 	"strconv"
 	"time"
@@ -16,8 +17,11 @@ type Client struct {
 }
 
 // New returns a new lambda Client that uses the provided WriteCloser.
-func New(w io.WriteCloser) *Client {
-	return &Client{writer: w}
+func New(w io.WriteCloser) (*Client, error) {
+	if w == nil {
+		return nil, errors.New("invalid writer")
+	}
+	return &Client{writer: w}, nil
 }
 
 // Close wraps the writers Close method.
@@ -60,7 +64,7 @@ func (l *Client) send(name string, value string, tags []string, metricType strin
 	tgs = append(tgs, l.Tags...)
 	tgs = append(tgs, tags...)
 
-	buffer.WriteString("|#")
+	buffer.WriteRune('#')
 	buffer.WriteString(tgs[0])
 	for _, tag := range tgs[1:] {
 		buffer.WriteString(",")

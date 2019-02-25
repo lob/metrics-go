@@ -33,7 +33,10 @@ func New(cfg Config) (*StatsReporter, error) {
 
 	var client metricsClient
 	if cfg.Lambda {
-		lambda := lambda.New(cfg.LambdaLogger)
+		lambda, err := lambda.New(cfg.LambdaLogger)
+		if err != nil {
+			return &StatsReporter{}, err
+		}
 
 		lambda.Namespace = cfg.Namespace
 		lambda.Tags = []string{
