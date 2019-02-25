@@ -30,17 +30,17 @@ func (l *Client) Close() error {
 	return l.writer.Close()
 }
 
-// Count sends a count metric.
+// Count converts count to a string and sends the metric.
 func (l *Client) Count(name string, count int64, tags []string, rate float64) error {
 	return l.send(name, strconv.FormatInt(count, 10), tags, "count")
 }
 
-// Gauge sends a gauge metric.
+// Gauge converts the gauge value to a string and sends the metric.
 func (l *Client) Gauge(name string, value float64, tags []string, rate float64) error {
 	return l.send(name, strconv.FormatFloat(value, 'f', -1, 64), tags, "gauge")
 }
 
-// Histogram sends a histogram metric.
+// Histogram converts the histogram value to a string and sends the metric.
 func (l *Client) Histogram(name string, value float64, tags []string, rate float64) error {
 	return l.send(name, strconv.FormatFloat(value, 'f', -1, 64), tags, "histogram")
 }
