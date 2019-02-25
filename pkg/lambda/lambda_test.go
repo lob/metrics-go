@@ -20,32 +20,32 @@ const testTag = "foo:bar"
 
 var testTags = []string{testTag}
 
-type mockWriteCloser struct {
+type testWriteCloser struct {
 	t      *testing.T
 	buffer *bytes.Buffer
 	closed bool
 }
 
-func (w *mockWriteCloser) Write(p []byte) (n int, err error) {
+func (w *testWriteCloser) Write(p []byte) (n int, err error) {
 	return w.buffer.Write(p)
 }
 
-func (w *mockWriteCloser) Close() error {
+func (w *testWriteCloser) Close() error {
 	w.closed = true
 	return nil
 }
 
-func newMockedClient(t *testing.T) *Client {
-	w := &mockWriteCloser{t, new(bytes.Buffer), false}
+func newTestClient(t *testing.T) *Client {
+	w := &testWriteCloser{t, new(bytes.Buffer), false}
 	c, err := New(w)
 	assert.NoError(t, err)
 
-	c.Namespace = "testing"
+	c.Namespace = "testing."
 	return c
 }
 
 func TestNewLambda(t *testing.T) {
-	w := &mockWriteCloser{t, new(bytes.Buffer), false}
+	w := &testWriteCloser{t, new(bytes.Buffer), false}
 
 	t.Run("create new lambda Client", func(t *testing.T) {
 		c, err := New(w)
@@ -63,24 +63,24 @@ func TestNewLambda(t *testing.T) {
 
 func TestClose(t *testing.T) {
 	t.Run("calls Close function and closes the WriteCloser", func(t *testing.T) {
-		mc := newMockedClient(t)
+		tc := newTestClient(t)
 
-		err := mc.Close()
+		err := tc.Close()
 		assert.NoError(t, err)
 
-		w := mc.writer.(*mockWriteCloser)
+		w := tc.writer.(*testWriteCloser)
 		assert.Equal(t, true, w.closed)
 	})
 }
 
 func TestCount(t *testing.T) {
 	t.Run("calls Count function and calls send", func(t *testing.T) {
-		mc := newMockedClient(t)
+		tc := newTestClient(t)
 
-		err := mc.Count(testMetric, testCount, testTags, testRate)
+		err := tc.Count(testMetric, testCount, testTags, testRate)
 		assert.NoError(t, err)
 
-		w := mc.writer.(*mockWriteCloser)
+		w := tc.writer.(*testWriteCloser)
 		got := w.buffer.String()
 		assert.Equal(t, strings.Contains(got, "MONITORING"), true)
 		assert.Equal(t, strings.Contains(got, "count"), true)
@@ -90,12 +90,12 @@ func TestCount(t *testing.T) {
 
 func TestGauge(t *testing.T) {
 	t.Run("calls Gauge function and calls send", func(t *testing.T) {
-		mc := newMockedClient(t)
+		tc := newTestClient(t)
 
-		err := mc.Gauge(testMetric, testValue, testTags, testRate)
+		err := tc.Gauge(testMetric, testValue, testTags, testRate)
 		assert.NoError(t, err)
 
-		w := mc.writer.(*mockWriteCloser)
+		w := tc.writer.(*testWriteCloser)
 		got := w.buffer.String()
 		fmt.Println(strconv.FormatFloat(50, 'f', -1, 64))
 		assert.Equal(t, strings.Contains(got, "MONITORING"), true)
@@ -106,12 +106,12 @@ func TestGauge(t *testing.T) {
 
 func TestHistogram(t *testing.T) {
 	t.Run("calls Histogram function and calls send", func(t *testing.T) {
-		mc := newMockedClient(t)
+		tc := newTestClient(t)
 
-		err := mc.Histogram(testMetric, testValue, testTags, testRate)
+		err := tc.Histogram(testMetric, testValue, testTags, testRate)
 		assert.NoError(t, err)
 
-		w := mc.writer.(*mockWriteCloser)
+		w := tc.writer.(*testWriteCloser)
 		got := w.buffer.String()
 		fmt.Println(got)
 		assert.Equal(t, strings.Contains(got, "MONITORING"), true)
@@ -121,7 +121,7 @@ func TestHistogram(t *testing.T) {
 }
 
 func TestSend(t *testing.T) {
-	w := &mockWriteCloser{t, new(bytes.Buffer), false}
+	w := &testWriteCloser{t, new(bytes.Buffer), false}
 
 	t.Run("calls send function and writes a string in the correct format", func(t *testing.T) {
 		c, err := New(w)

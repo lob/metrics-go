@@ -16,7 +16,7 @@ type metricsClient interface {
 	Close() error
 }
 
-// StatsReporter provides the ability to report metrics to a client.
+// StatsReporter provides the ability to report metrics to a metrics backend.
 type StatsReporter struct {
 	client metricsClient
 }
