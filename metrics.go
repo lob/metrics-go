@@ -31,6 +31,12 @@ func New(cfg Config) (*StatsReporter, error) {
 		cfg.Namespace = fmt.Sprintf("%s.", cfg.Namespace)
 	}
 
+	tags := []string{
+		fmt.Sprintf("environment:%s", cfg.Environment),
+		fmt.Sprintf("container:%s", cfg.Hostname),
+		fmt.Sprintf("release:%s", cfg.Release),
+	}
+
 	var client metricsClient
 	if cfg.Lambda {
 		lambda, err := lambda.New(cfg.LambdaLogger)
@@ -39,11 +45,7 @@ func New(cfg Config) (*StatsReporter, error) {
 		}
 
 		lambda.Namespace = cfg.Namespace
-		lambda.Tags = []string{
-			fmt.Sprintf("environment:%s", cfg.Environment),
-			fmt.Sprintf("container:%s", cfg.Hostname),
-			fmt.Sprintf("release:%s", cfg.Release),
-		}
+		lambda.Tags = tags
 
 		client = lambda
 	} else {
@@ -54,11 +56,7 @@ func New(cfg Config) (*StatsReporter, error) {
 		}
 
 		statsd.Namespace = cfg.Namespace
-		statsd.Tags = []string{
-			fmt.Sprintf("environment:%s", cfg.Environment),
-			fmt.Sprintf("container:%s", cfg.Hostname),
-			fmt.Sprintf("release:%s", cfg.Release),
-		}
+		statsd.Tags = tags
 
 		client = statsd
 	}
