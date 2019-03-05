@@ -28,8 +28,7 @@ type mockClient struct {
 	rate  float64
 }
 
-type mockWriter struct {
-}
+type mockWriter struct{}
 
 func (w *mockWriter) Write(p []byte) (n int, err error) {
 	return len(p), nil

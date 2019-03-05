@@ -77,45 +77,72 @@ func TestClose(t *testing.T) {
 func TestCount(t *testing.T) {
 	t.Run("calls Count function and calls send", func(t *testing.T) {
 		tc := newTestClient(t)
+		tc.Namespace = "test"
 
 		err := tc.Count(testMetric, testCount, testTags, testRate)
 		require.NoError(t, err)
 
 		w := tc.writer.(*testWriteCloser)
+
 		got := w.buffer.String()
-		assert.Equal(t, strings.Contains(got, "MONITORING"), true)
-		assert.Equal(t, strings.Contains(got, "count"), true)
-		assert.Equal(t, strings.Contains(got, strconv.FormatInt(testCount, 10)), true)
+		want := fmt.Sprintf(
+			"MONITORING|%d|%s|%s|%s.%s|#%s",
+			time.Now().Unix(),
+			strconv.FormatInt(testCount, 10),
+			"count",
+			tc.Namespace,
+			testMetric,
+			strings.Join(testTags, ","),
+		)
+		assert.Equal(t, got, want)
 	})
 }
 
 func TestGauge(t *testing.T) {
 	t.Run("calls Gauge function and calls send", func(t *testing.T) {
 		tc := newTestClient(t)
+		tc.Namespace = "test"
 
 		err := tc.Gauge(testMetric, testValue, testTags, testRate)
 		require.NoError(t, err)
 
 		w := tc.writer.(*testWriteCloser)
+
 		got := w.buffer.String()
-		assert.Equal(t, strings.Contains(got, "MONITORING"), true)
-		assert.Equal(t, strings.Contains(got, "gauge"), true)
-		assert.Equal(t, strings.Contains(got, strconv.FormatFloat(testValue, 'f', -1, 64)), true)
+		want := fmt.Sprintf(
+			"MONITORING|%d|%s|%s|%s.%s|#%s",
+			time.Now().Unix(),
+			strconv.FormatFloat(testValue, 'f', -1, 64),
+			"gauge",
+			tc.Namespace,
+			testMetric,
+			strings.Join(testTags, ","),
+		)
+		assert.Equal(t, got, want)
 	})
 }
 
 func TestHistogram(t *testing.T) {
 	t.Run("calls Histogram function and calls send", func(t *testing.T) {
 		tc := newTestClient(t)
+		tc.Namespace = "test"
 
 		err := tc.Histogram(testMetric, testValue, testTags, testRate)
 		require.NoError(t, err)
 
 		w := tc.writer.(*testWriteCloser)
+
 		got := w.buffer.String()
-		assert.Equal(t, strings.Contains(got, "MONITORING"), true)
-		assert.Equal(t, strings.Contains(got, "histogram"), true)
-		assert.Equal(t, strings.Contains(got, strconv.FormatFloat(testValue, 'f', -1, 64)), true)
+		want := fmt.Sprintf(
+			"MONITORING|%d|%s|%s|%s.%s|#%s",
+			time.Now().Unix(),
+			strconv.FormatFloat(testValue, 'f', -1, 64),
+			"histogram",
+			tc.Namespace,
+			testMetric,
+			strings.Join(testTags, ","),
+		)
+		assert.Equal(t, got, want)
 	})
 }
 
