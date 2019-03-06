@@ -38,10 +38,20 @@ struct for convenience.
 m.Count("event-counter", 1)
 ```
 
+### Gauge
+```go
+m.Gauge("num-workers", 5)
+```
+
 ### Histogram
 
 ```go
 m.Histogram("queue-depth", 10)
+```
+
+### Close
+```go
+m.Close()
 ```
 
 ### Timers
@@ -69,6 +79,19 @@ e := echo.New()
 e.Use(metrics.Middleware(m))
 
 ```
+
+## Lambda
+
+The server-less [AWS Lambda Service](https://www.datadoghq.com/blog/monitoring-lambda-functions-datadog/) allows us to do expensive computations without having to manage extra infrastructure.
+However, without control of the actual server the code is running on, it's impossible to run a Datadog agent on or alongside the host.
+This makes using a normal StatsD client unfeasible.
+Instead, we can write metrics to logs that Datadog reads through an AWS account integration as detailed [here](https://www.datadoghq.com/blog/monitoring-lambda-functions-datadog/#beyond-standard-metrics).
+
+### Configuration
+
+The only differences in configuring this library for a lambda function instead of a standard Go library are:
+1. You must set `Lambda: true` in the metrics.Config.
+2. You must set `LambdaLogger` to a struct that implements the `io.WriteCloser` interface in the metrics.Config.
 
 ## Development
 

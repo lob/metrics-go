@@ -20,14 +20,14 @@ func TestTimer(t *testing.T) {
 		timer := metrics.NewTimer(testMetric, testTag)
 		require.NotNil(t, timer)
 
-		time.Sleep(time.Duration(testDuration) * time.Millisecond)
+		time.Sleep(time.Duration(testValue) * time.Millisecond)
 		timer.End()
 
 		mc, ok := metrics.client.(*mockClient)
 		require.True(t, ok, "unexpected error during type assertion")
 
 		assert.Equal(t, testMetric, mc.name, "inconsistent metric name")
-		assert.True(t, testDuration <= mc.duration, "incorrect duration")
+		assert.True(t, testValue <= mc.value, "incorrect duration")
 		assert.Equal(t, testTags, mc.tags, "inconsistent tags")
 		assert.Equal(t, testRate, mc.rate, "inconsistent rate")
 	})
