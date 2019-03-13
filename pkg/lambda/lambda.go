@@ -58,7 +58,6 @@ func (l *Client) send(name string, value string, tags []string, metricType strin
 	buffer.WriteString(metricType)
 	buffer.WriteRune('|')
 	buffer.WriteString(l.Namespace)
-	buffer.WriteRune('.')
 	buffer.WriteString(name)
 	buffer.WriteRune('|')
 
