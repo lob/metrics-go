@@ -86,7 +86,7 @@ func TestCount(t *testing.T) {
 
 		got := w.buffer.String()
 		want := fmt.Sprintf(
-			"MONITORING|%d|%s|%s|%s.%s|#%s",
+			"MONITORING|%d|%s|%s|%s%s|#%s",
 			time.Now().Unix(),
 			strconv.FormatInt(testCount, 10),
 			"count",
@@ -110,7 +110,7 @@ func TestGauge(t *testing.T) {
 
 		got := w.buffer.String()
 		want := fmt.Sprintf(
-			"MONITORING|%d|%s|%s|%s.%s|#%s",
+			"MONITORING|%d|%s|%s|%s%s|#%s",
 			time.Now().Unix(),
 			strconv.FormatFloat(testValue, 'f', -1, 64),
 			"gauge",
@@ -134,7 +134,7 @@ func TestHistogram(t *testing.T) {
 
 		got := w.buffer.String()
 		want := fmt.Sprintf(
-			"MONITORING|%d|%s|%s|%s.%s|#%s",
+			"MONITORING|%d|%s|%s|%s%s|#%s",
 			time.Now().Unix(),
 			strconv.FormatFloat(testValue, 'f', -1, 64),
 			"histogram",
@@ -165,7 +165,7 @@ func TestSend(t *testing.T) {
 
 		got := w.buffer.String()
 		want := fmt.Sprintf(
-			"MONITORING|%d|%s|%s|%s.%s|#%s",
+			"MONITORING|%d|%s|%s|%s%s|#%s",
 			now,
 			value,
 			metricType,
