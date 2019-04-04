@@ -72,6 +72,8 @@ func (l *Client) send(name string, value string, tags []string, metricType strin
 		buffer.WriteString(tag)
 	}
 
+	buffer.WriteRune('\n')
+
 	_, err := l.writer.Write(buffer.Bytes())
 	return err
 }
